@@ -63,7 +63,12 @@ Access:
 For the fully-fledged semantic layer experience:
 
 ```bash
-# After completing Steps 1-3 above
+# Run from project root (where docker-compose.yml is located)
+
+# Pull Docker images (Cube Core and Metabase)
+docker-compose pull
+
+# Start containers in detached mode
 docker-compose up -d
 ```
 
