@@ -1,0 +1,20 @@
+views:
+  - name: vw_daily_sales_by_store
+
+    cubes:
+      - join_path: sales
+        includes:
+          # Dimensions
+          - order_purchase_timestamp
+
+          # Measures
+          - total_sales
+          - order_count
+          - avg_daily_sales
+          - current_month_sales
+          - previous_month_sales
+          - monthly_sales_growth_rate
+
+      - join_path: sales.sellers
+        includes:
+          - seller_name

@@ -1,0 +1,150 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: >
+      Staging layer for customer data at ORDER grain (one row per order).
+      Contains cleaned and standardized customer information including location data.
+      Note: customer_id (natural key) is not unique; same customer can have multiple orders.
+    
+    columns:
+      - name: customer_id
+        description: Natural key - Unique identifier for each customer (may have multiple orders)
+        tests:
+          - not_null
+      
+      - name: customer_order_reference_id
+        description: Primary key - Order-level identifier, one per order (unique)
+        tests:
+          - not_null
+          - unique
+      
+      - name: customer_city
+        description: City where customer resides (trimmed)
+      
+      - name: customer_state
+        description: State code where customer resides (uppercase, trimmed)
+        tests:
+          - not_null
+
+  - name: stg_orders
+    description: >
+      Staging layer for orders. Contains order lifecycle information with
+      standardized timestamps and status values.
+    
+    columns:
+      - name: order_id
+        description: Primary key - Unique order identifier
+        tests:
+          - not_null
+          - unique
+      
+      - name: customer_order_reference_id
+        description: Foreign key to customers (order-level)
+        tests:
+          - not_null
+          - relationships:
+              config:
+                severity: warn
+              to: ref('stg_customers')
+              field: customer_order_reference_id
+      
+      - name: order_status
+        description: Current order status (lowercase, trimmed)
+        tests:
+          - not_null
+          - accepted_values:
+              config:
+                severity: warn
+              values: ['delivered', 'shipped', 'invoiced', 'processing', 'canceled', 'unavailable', 'approved', 'created']
+      
+      - name: order_purchase_timestamp
+        description: Timestamp when order was placed
+        tests:
+          - not_null
+
+  - name: stg_order_items
+    description: >
+      Staging layer for order line items. Contains pricing information and
+      product/seller references.
+    
+    columns:
+      - name: order_id
+        description: Foreign key to orders
+        tests:
+          - not_null
+          - relationships:
+              config:
+                severity: warn
+              to: ref('stg_orders')
+              field: order_id
+      
+      - name: order_item_id
+        description: Composite primary key (order_id || '_' || order_item_sequence)
+        tests:
+          - not_null
+          - unique
+      
+      - name: order_item_sequence
+        description: Sequential item number within order (original order_item_id)
+        tests:
+          - not_null
+      
+      - name: product_id
+        description: Foreign key to products
+        tests:
+          - not_null
+          - relationships:
+              config:
+                severity: warn
+              to: ref('stg_products')
+              field: product_id
+      
+      - name: seller_id
+        description: Identifier for seller/store
+        tests:
+          - not_null
+      
+      - name: item_price
+        description: Item price in local currency (SAR)
+        tests:
+          - not_null
+      
+      - name: shipping_price
+        description: Shipping cost for this item
+        tests:
+          - not_null
+      
+      - name: shipping_limit_date
+        description: Shipping limit date for this item
+
+  - name: stg_products
+    description: >
+      Staging layer for product catalog. Contains product attributes and
+      physical dimensions.
+    
+    columns:
+      - name: product_id
+        description: Primary key - Unique product identifier
+        tests:
+          - not_null
+          - unique
+      
+      - name: product_category_name
+        description: Product category in Portuguese (lowercase, 'unknown' for nulls)
+        tests:
+          - not_null
+      
+      - name: product_weight_g
+        description: Product weight in grams
+      
+      - name: product_length_cm
+        description: Product length in centimeters
+      
+      - name: product_height_cm
+        description: Product height in centimeters
+      
+      - name: product_width_cm
+        description: Product width in centimeters
+
+

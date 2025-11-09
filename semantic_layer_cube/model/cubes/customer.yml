@@ -1,0 +1,50 @@
+cubes:
+  - name: customers
+    sql_table: dim_customers
+    public: false
+    title: Customers Dimension
+    description: Customer addresses with SCD Type 2 for historical regional analysis
+
+    dimensions:
+      - name: customer_address_id
+        sql: "{CUBE}.customer_address_id"
+        type: number
+        primary_key: true
+        title: Customer Address ID
+        description: Unique surrogate key for each customer address period (SCD Type 2)
+
+      - name: customer_id
+        sql: "{CUBE}.customer_id"
+        type: string
+        title: Customer ID
+        description: Natural key that identies each customer uniquely
+
+      - name: customer_city
+        sql: "{CUBE}.customer_city"
+        type: string
+        title: Customer City
+        description: City where the customer is located
+
+      - name: customer_state
+        sql: "{CUBE}.customer_state"
+        type: string
+        title: Customer State
+        description: State where the customer is located
+
+      - name: effective_from
+        sql: "{CUBE}.effective_from"
+        type: time
+        title: Effective From
+        description: Start date of this address period
+
+      - name: effective_to
+        sql: "{CUBE}.effective_to"
+        type: time
+        title: Effective To
+        description: End date of this address period (9999-12-31 if current)
+
+      - name: is_current_address
+        sql: "{CUBE}.is_current_address"
+        type: boolean
+        title: Is Current Address
+        description: Flag indicating if this is the customer's current address

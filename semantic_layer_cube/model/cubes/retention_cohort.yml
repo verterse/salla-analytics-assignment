@@ -1,0 +1,119 @@
+cubes:
+  - name: retention_cohort
+    sql: >
+      WITH customer_cohorts AS (
+          SELECT
+              customer_id
+              , MIN(DATE(order_purchase_timestamp, 'start of month')) AS cohort_month
+          FROM
+              fct_order_items
+          GROUP BY
+              customer_id
+      )
+      
+      , list_of_months AS (
+          SELECT DISTINCT
+              DATE(order_purchase_timestamp, 'start of month') AS activity_month
+          FROM
+              fct_order_items
+      )
+      
+      , orders_by_customer_month AS (
+          SELECT
+              customer_id
+              , DATE(order_purchase_timestamp, 'start of month') AS activity_month
+              , COUNT(DISTINCT order_id) AS orders_count
+              -- , SUM(total_item_price + total_shipping_price) AS total_sales
+          FROM
+              fct_order_items
+          GROUP BY
+              customer_id, activity_month
+      )
+      
+      SELECT
+          cohort.cohort_month
+          , months.activity_month
+          , cohort.customer_id
+          , (
+              (CAST(STRFTIME('%Y', months.activity_month) AS INTEGER) * 12 + CAST(STRFTIME('%m', months.activity_month) AS INTEGER))
+              - (CAST(STRFTIME('%Y', cohort.cohort_month) AS INTEGER) * 12 + CAST(STRFTIME('%m', cohort.cohort_month) AS INTEGER))
+          ) AS months_since_cohort
+          , COALESCE(orders.orders_count, 0) AS orders_count
+          -- , COALESCE(orders.total_sales, 0.0) AS total_sales
+      FROM
+          customer_cohorts AS cohort
+      LEFT JOIN
+          list_of_months AS months ON (
+              months.activity_month >= cohort.cohort_month
+          )
+      LEFT JOIN
+          orders_by_customer_month AS orders ON (
+              orders.customer_id = cohort.customer_id
+              AND orders.activity_month = months.activity_month
+          )
+    
+    title: Customer Cohort Retention Analysis
+    
+    dimensions:
+
+      - name: cohort_activity_customer_key
+        sql: "CAST({CUBE}.cohort_month AS TEXT) || '_' || CAST({CUBE}.activity_month AS TEXT) || '_' || {CUBE}.customer_id"
+        type: string
+        primary_key: true
+        title: Primary Key
+        description: Primary key combining cohort month, activity month, and customer ID
+
+      - name: cohort_month
+        sql: "{CUBE}.cohort_month"
+        type: time
+        title: Cohort Month
+        description: Month when customer made first purchase (cohort identifier)
+      
+      - name: activity_month
+        sql: "{CUBE}.activity_month"
+        type: time
+        title: Activity Month
+        description: Month being analyzed for cohort activity
+      
+      - name: customer_id
+        sql: "{CUBE}.customer_id"
+        type: string
+        title: Customer ID
+        description: Customer identifier
+      
+      - name: months_since_cohort
+        sql: "'M' || SUBSTR('0' || CAST({CUBE}.months_since_cohort AS TEXT), -2, 2)"
+        type: string
+        title: Months Since Cohort
+        description: Number of months elapsed since customer's first purchase (formatted as M00, M01, M02, etc.)
+    
+    measures:
+      - name: cohort_size
+        type: count_distinct
+        sql: "{CUBE}.customer_id"
+        title: Cohort Size
+        description: Number of customers in the cohort (month 0)
+      
+      - name: active_customers
+        type: count_distinct
+        sql: "CASE WHEN {CUBE}.orders_count > 0 THEN {CUBE}.customer_id END"
+        title: Active Customers
+        description: Number of customers who made uncancelled purchases in this period
+      
+      # - name: total_orders
+      #   sql: "{CUBE}.orders_count"
+      #   type: sum
+      #   title: Total Orders
+      #   description: Total number of orders placed
+      
+      # - name: total_sales
+      #   sql: "{CUBE}.total_sales"
+      #   type: sum
+      #   title: Total Sales
+      #   description: Total sales revenue
+      
+      - name: retention_rate
+        sql: "100.0 * {active_customers} / NULLIF({cohort_size}, 0)"
+        type: number
+        title: Retention Rate
+        description: Percentage of cohort that remained active (active customers / cohort size)

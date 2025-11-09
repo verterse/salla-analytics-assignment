@@ -1,0 +1,126 @@
+version: 2
+
+models:
+
+  - name: fct_order_items
+    description: >
+      Atomic fact table at order item grain.
+      Excludes cancelled orders. Single source of truth for all sales analytics.
+      This is the foundation for all aggregations in the semantic layer.
+    columns:
+      - name: order_item_id
+        description: Primary key - Unique identifier for each order item
+        tests:
+          - not_null
+          - unique
+      - name: order_id
+        description: Foreign key to orders
+        tests:
+          - not_null
+      - name: product_id
+        description: Foreign key to dim_products
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: seller_id
+        description: Foreign key to dim_sellers
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_sellers')
+              field: seller_id
+      - name: customer_id
+        description: Foreign key to dim_customers (natural key)
+        tests:
+          - not_null
+      - name: order_status
+        description: Order status (cancelled orders excluded)
+        tests:
+          - not_null
+      - name: order_purchase_timestamp
+        description: Timestamp when order was purchased
+        tests:
+          - not_null
+      - name: quantity
+        description: Quantity of items in this order line
+        tests:
+          - not_null
+      - name: unit_item_price
+        description: Price per unit
+        tests:
+          - not_null
+      - name: total_item_price
+        description: Total item revenue (quantity * unit_item_price)
+        tests:
+          - not_null
+      - name: total_shipping_price
+        description: Freight cost for this item
+        tests:
+          - not_null
+
+  - name: dim_customers
+    description: >
+      SCD Type 2 Customer Dimension tracking address changes over time.
+      Enables accurate regional sales analysis with historical context.
+    columns:
+      - name: customer_address_id
+        description: Primary key - Surrogate key for each customer address period
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: Natural key - Customer identifier
+        tests:
+          - not_null
+      - name: customer_city
+        description: City where customer is located during this period
+      - name: customer_state
+        description: State where customer is located during this period
+        tests:
+          - not_null
+      - name: effective_from
+        description: Start timestamp of this address period
+        tests:
+          - not_null
+      - name: effective_to
+        description: End timestamp of this address period (9999-12-31 if current)
+        tests:
+          - not_null
+      - name: is_current_address
+        description: Flag indicating if this is the customer's current address
+        tests:
+          - not_null
+
+  - name: dim_products
+    description: >
+      Product dimension containing product catalog information and attributes.
+    columns:
+      - name: product_id
+        description: Primary key - Unique product identifier
+        tests:
+          - not_null
+          - unique
+      - name: product_name
+        description: Product name (placeholder - same as ID in current data)
+      - name: product_category_name
+        description: Product category
+        tests:
+          - not_null
+      - name: product_photos_qty
+        description: Number of product photos
+
+  - name: dim_sellers
+    description: >
+      Seller/Store dimension containing store identifiers.
+      Foundation for store-level analytics and performance tracking.
+      Mock table as seller data is not available in the source data.
+    columns:
+      - name: seller_id
+        description: Primary key - Unique seller/store identifier
+        tests:
+          - not_null
+          - unique
+      - name: seller_name
+        description: Seller/store name (placeholder - same as ID in current data)

@@ -1,0 +1,176 @@
+cubes:
+  - name: sales
+    sql: SELECT *, total_item_price + total_shipping_price AS total_price FROM fct_order_items
+    public: false
+    title: Sales
+    description: Atomic grain fact table for all sales analytics
+
+    joins:
+      - name: products
+        relationship: many_to_one
+        sql: "{CUBE}.product_id = {products.product_id}"
+
+      - name: customers
+        relationship: many_to_one
+        sql: "{CUBE}.customer_id = {customers.customer_id} AND
+          {CUBE}.order_purchase_timestamp >= {customers.effective_from} AND
+          {CUBE}.order_purchase_timestamp < {customers.effective_to}"
+
+      - name: sellers
+        relationship: many_to_one
+        sql: "{CUBE}.seller_id = {sellers.seller_id}"
+
+    dimensions:
+      - name: order_item_id
+        sql: "{CUBE}.order_item_id"
+        type: string
+        title: Order Item ID
+        description: Unique identifier for each order item
+        primary_key: true
+
+      - name: order_id
+        sql: "{CUBE}.order_id"
+        type: string
+        title: Order ID
+        description: Order identifier
+
+      - name: product_id
+        sql: "{CUBE}.product_id"
+        type: string
+        title: Product ID
+        description: Product identifier
+
+      - name: seller_id
+        sql: "{CUBE}.seller_id"
+        type: string
+        title: Seller ID
+        description: Seller/store identifier
+
+      - name: customer_id
+        sql: "{CUBE}.customer_id"
+        type: string
+        title: Customer ID
+        description: Customer identifier
+
+      - name: order_purchase_timestamp
+        sql: "{CUBE}.order_purchase_timestamp"
+        type: time
+        title: Order Purchase Time
+        description: When the order was purchased
+
+      - name: order_purchase_month
+        sql: "DATE({CUBE}.order_purchase_timestamp, 'start of month')"
+        type: time
+        title: Order Purchase Time
+        description: When the order was purchased
+
+      - name: order_status
+        sql: "{CUBE}.order_status"
+        type: string
+        title: Order Status
+        description: Status of the order
+
+    measures:
+      - name: count
+        type: count
+        title: Order Item Count
+        description: Total number of order items
+
+      - name: item_revenue
+        sql: "{CUBE}.total_item_price"
+        type: sum
+        title: Item Revenue
+        description: Total item revenue (excluding freight)
+
+      - name: item_freight
+        sql: "{CUBE}.total_shipping_price"
+        type: sum
+        title: Freight Value
+        description: Total freight/shipping costs
+
+      - name: total_sales
+        sql: "{CUBE}.total_price"
+        type: sum
+        title: Total Sales
+        description: Total sales including shipping
+
+      - name: quantity
+        sql: "{CUBE}.quantity"
+        type: sum
+        title: Total Quantity
+        description: Total quantity of items sold
+
+      - name: order_count
+        sql: "{CUBE}.order_id"
+        type: count_distinct
+        title: Order Count
+        description: Number of unique orders
+
+      - name: customer_count
+        sql: "{CUBE}.customer_id"
+        type: count_distinct
+        title: Customer Count
+        description: Number of unique customers
+
+      - name: avg_item_unit_price
+        sql: "{CUBE}.unit_item_price"
+        type: avg
+        title: Average Item Unit Price
+        description: Average item unit price
+
+      - name: avg_item_sale_value
+        sql: "{CUBE}.total_item_price"
+        type: avg
+        title: Average Item Sale Value
+        description: Average item sale value, accounting for price and quantity
+
+      - name: days_sold_count
+        sql: "DATE({CUBE}.order_purchase_timestamp)"
+        type: count_distinct
+        title: Number of Days with Sales
+        description: Count of distinct days with sales activity
+
+      - name: avg_daily_sales
+        sql: "{total_sales} / NULLIF({days_sold_count}, 0)"
+        type: number
+        title: Average Daily Sales
+        description: Average sales per day (total sales / number of days)
+
+      - name: current_month_sales
+        sql: "{CUBE}.total_price"
+        type: sum
+        title: Current Month Sales
+        description: Total sales in current month
+
+      - name: previous_month_sales
+        sql: "{CUBE}.total_price"
+        type: sum
+        rolling_window:
+          trailing: 1 month
+          offset: start
+        title: Previous Month Sales
+        description: Total sales in previous month
+
+      - name: monthly_sales_growth_rate
+        sql: "((1.0 * {current_month_sales} - {previous_month_sales})) / NULLIF({previous_month_sales}, 0)"
+        type: number
+        title: Monthly Sales Growth Rate
+        description: Month-over-month growth rate of sales (as decimal, multiply by 100 for percentage)
+
+    # Disabling pre-aggregations since this is a local Docker setup and we are using SQLite
+    # Production: Enable in a real datawarehouse like Snowflake for 10-100x performance
+
+    # pre_aggregations:
+    #   - name: daily_sales_preaggregated
+    #     measures:
+    #       - order_items.item_revenue
+    #     dimensions:
+    #       - customers.customer_state
+    #       - products.product_category_name
+    #       - products.product_id
+    #       - sellers.seller_name
+    #       - sellers.seller_id
+    #     time_dimension: order_items.order_purchase_timestamp
+    #     granularity: day
+    #     refresh_key:
+    #       every: 1 hour

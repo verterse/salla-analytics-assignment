@@ -1,0 +1,83 @@
+name: 'salla_analytics'
+version: '1.0.0'
+config-version: 2
+
+# Project profile
+profile: 'salla_analytics'
+
+# Directories
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+# Output directory for compiled code
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+  - "logs"
+
+# Model configurations
+models:
+  salla_analytics:
+    # Staging models (Silver Layer)
+    # NOTE: Materialized as 'table' instead of 'view' due to SQLite limitation.
+    # SQLite does not allow views in one schema (database file) to reference 
+    # objects in another schema. Since dbt-sqlite implements schemas as separate
+    # .db files, cross-schema views are not possible.
+    # Reference: https://docs.getdbt.com/docs/core/connect-data-platform/sqlite-setup
+    staging:
+      +materialized: table
+      +schema: staging
+      +tags: ['silver', 'staging']
+      +docs:
+        node_color: "#8BC34A"  # Green for silver
+    
+    # Intermediate models
+    intermediate:
+      +materialized: table
+      +schema: intermediate
+      +docs:
+        node_color: "#FFC107"  # Yellow for intermediate
+      
+      # Foundation/base models - reusable transformations
+      base:
+        +tags: ['intermediate', 'base']
+      
+      # Dimensional models
+      dimensions:
+        +tags: ['intermediate', 'dimension']
+      
+      # Fact tables
+      facts:
+        +tags: ['intermediate', 'fact']
+    
+    # Curated models (Gold Layer) - atomic facts and conformed dimensions for BI
+    curated:
+      +materialized: table
+      +schema: curated
+      +tags: ['gold', 'curated']
+      +docs:
+        node_color: "#FFD700"  # Gold for curated
+
+# Variables
+vars:
+  # Date format for parsing
+  date_format: '%m/%d/%Y %H:%M'
+  
+  # Business rules
+  valid_order_statuses: ['delivered', 'shipped', 'invoiced']
+  revenue_status_filter: 'delivered'
+
+# Documentation
+docs-paths: ["docs"]
+
+# Seeds configuration
+seeds:
+  +schema: seeds
+  +quote_columns: false
+
+

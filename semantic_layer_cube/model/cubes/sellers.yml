@@ -1,0 +1,20 @@
+cubes:
+  - name: sellers
+    sql_table: dim_sellers
+    public: false
+    title: Sellers Dimension
+    description: Store/seller information for store-level analytics
+
+    dimensions:
+      - name: seller_id
+        sql: "{CUBE}.seller_id"
+        type: string
+        primary_key: true
+        title: Seller ID
+        description: Unique identifier for each seller/store
+
+      - name: seller_name
+        sql: "{CUBE}.seller_name"
+        type: string
+        title: Seller Name
+        description: Name of the seller/store

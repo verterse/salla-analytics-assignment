@@ -1,0 +1,32 @@
+cubes:
+  - name: products
+    sql_table: dim_products
+    public: false
+    title: Products Dimension
+    description: Product catalog with attributes for enriching sales analysis
+
+    dimensions:
+      - name: product_id
+        sql: "{CUBE}.product_id"
+        type: string
+        primary_key: true
+        title: Product ID
+        description: Unique identifier for the product
+
+      - name: product_name
+        sql: "{CUBE}.product_name"
+        type: string
+        title: Product Name
+        description: Name of the product
+
+      - name: product_category_name
+        sql: "{CUBE}.product_category_name"
+        type: string
+        title: Product Category
+        description: Category name of the product
+
+      - name: product_photos_qty
+        sql: "{CUBE}.product_photos_qty"
+        type: number
+        title: Product Photos Quantity
+        description: Number of photos associated with the product

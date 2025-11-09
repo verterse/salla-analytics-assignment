@@ -1,0 +1,14 @@
+# Python Version Required: 3.9, 3.10, 3.11, or 3.12
+# (Python 3.13+ not yet compatible with dbt-core)
+
+# Core dependencies
+dbt-core>=1.7.0
+dbt-sqlite>=1.7.0
+
+# Data loading
+pandas
+
+# Dashboard
+streamlit
+plotly
+numpy

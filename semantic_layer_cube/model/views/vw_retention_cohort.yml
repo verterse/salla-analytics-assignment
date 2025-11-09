@@ -1,0 +1,15 @@
+views:
+  - name: vw_retention_cohort
+
+    cubes:
+      - join_path: retention_cohort
+        includes:
+          # Dimensions
+          - cohort_month
+          - activity_month
+          - months_since_cohort
+
+          # Measures
+          - cohort_size
+          - active_customers
+          - retention_rate

@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: int_customer_orders
+    description: >
+      Foundation model joining customers with orders.
+      Reusable base for subsequent models.
+    columns:
+      - name: order_id
+        description: Unique order identifier
+        tests:
+          - not_null
+          - unique
+      - name: customer_order_reference_id
+        description: Order-level customer reference
+        tests:
+          - not_null
+      - name: customer_id
+        description: Customer reference key
+        tests:
+          - not_null
+      - name: customer_city
+        description: City where customer is located
+      - name: customer_state
+        description: State where customer is located
+        tests:
+          - not_null
+      - name: order_status
+        description: Current order status
+        tests:
+          - not_null
+      - name: order_purchase_timestamp
+        description: Timestamp when order was purchased
+        tests:
+          - not_null
+
+  - name: int_order_items
+    description: >
+      Foundation model aggregating order items to product level within each order.
+      Calculates quantity and total item price per product per order.
+    columns:
+      - name: order_id
+        description: Order reference key
+        tests:
+          - not_null
+      - name: product_id
+        description: Product reference key
+        tests:
+          - not_null
+      - name: seller_id
+        description: Seller/store reference key
+        tests:
+          - not_null
+      - name: quantity
+        description: Total quantity of this product in the order
+        tests:
+          - not_null
+      - name: unit_item_price
+        description: Price per unit
+        tests:
+          - not_null
+      - name: total_item_price
+        description: Total item price
+        tests:
+          - not_null
+      - name: total_shipping_price
+        description: Total shipping price
+        tests:
+          - not_null

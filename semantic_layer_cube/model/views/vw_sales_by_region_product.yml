@@ -1,0 +1,28 @@
+views:
+  - name: vw_sales_by_region_product
+    
+    cubes:
+      - join_path: sales
+        includes:
+          # Dimensions
+          - order_purchase_timestamp
+          
+          # Measures
+          - item_revenue
+          - total_sales
+          - order_count
+          - quantity
+          - customer_count
+          - avg_item_sale_value
+
+      - join_path: sales.products
+        includes:
+          # Dimensions
+          - product_name
+          - product_category_name
+
+      - join_path: sales.customers
+        includes:
+          # Dimensions
+          - customer_state
+          - customer_city
