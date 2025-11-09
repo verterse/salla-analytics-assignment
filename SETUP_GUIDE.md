@@ -38,14 +38,17 @@ dbt build
 cd ..
 ```
 
-### Step 4: Launch Streamlit Dashboard
+## Pipeline 1: Python-Only Stack (Lightweight Fallback Option)
+
+Launch Streamlit Dashboard
 
 ```bash
 # Run from project root
 streamlit run dashboard.py
 ```
 
-The dashboard will open automatically in your browser at `http://localhost:8501`
+Access:
+- **Streamlit Dashboard:** http://localhost:8501
 
 ## Key Files
 
@@ -55,7 +58,7 @@ The dashboard will open automatically in your browser at `http://localhost:8501`
 - `dashboard.py` - Interactive dashboard
 - `ASSUMPTIONS.md` - Project assumptions documentation
 
-## Pipeline 2: Docker-Based Stack (Optional)
+## Pipeline 2: Docker-Based Stack (Recommended Option)
 
 For the fully-fledged semantic layer experience:
 
