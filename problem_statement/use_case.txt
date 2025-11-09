@@ -1,40 +1,20 @@
 Analytics Engineering Case Study
+
 Salla is an e-commerce platform that allows merchants to create an online store or move their business online. 
 You are working in Salla as an Analytics Engineer and your manager assigned a task for you that will contribute to another project that the product team is working on. This will help them in the process of identifying trends and patterns and guide the project’s strategy.
 You will be given 4 datasets which you will load to any database software of your choice and combine the tables together to work on the tasks that will be assigned to you.
+
 Tables brief and column description will be shared in a separate Excel sheet.
+
 Use the datasets given to you to help in providing insights to the product-team in the following, and note that the 4 tasks should be completed using SQL:
 1. What are the top selling products in general, and by region.
 2. What are the most popular categories?
 3. Calculate monthly, quarterly and yearly sales. (All products combined).
 4. What is the average sale by product category and what are the top product category based on customer location?
+
 Complete the following 3 tasks in python:
 1. Calculate the top 10 stores with the highest average daily sales. 
 2. Calculate the percentage of monthly growth in sales for each store.   
 3. Conduct cohort analysis on customers’ orders. Analyze the cohorts based on the month in which the customer made their first purchase and analyze their behavior over time. The results should be displayed as a heatmap that tracks the analysis by each month for every cohort. 
+
 Please note that you need to visualize your findings from all the tasks above. It is up to you to decide on how to visualize your results.
-Good luck 
-
-
-More context:
-
-Question asked: I have two questions on the take home assignment to ensure my submission aligns with your expectations.
- 
-Evaluation Criteria: Could you please provide some insight into the primary criteria on which the assignment is evaluated? For example, is the key focus on correctness of the final solution, the analytics approach, or adherence to problem constraints? 
-
-Preferred Approach: I can think of 2 distinct approaches to this problem and would like to know if you have a preference.
-The Data Analyst's Approach: Based on the problem statement ("You are working in Salla as a Data analyst..."), I can provide a solution-centered analysis, delivering the answer with minimal focus on modelling principles or engineering best practices.
-The Analytics Engineering Approach: In line with the role I'm interviewing for (Senior Analytics Engineer), I can demonstrate a mocked analytics pipeline including staged data, models following a medallion architecture, and metrics powered by a semantic layer.
-
-I believe that both approaches would require a similar amount of effort, but they would result in very different submissions. Please let me know if Salla has a preference between these two approaches.
-
-
-
-Answer to question:
-
-Thank you for reaching out with these questions.
-
-Evaluation Criteria: The evaluation of the assignment will be based on a combination of factors, but here is the priority:
-Analytics Approach and Logic: This is the primary focus. We are looking for a clear, logical, and technically sound thought process behind how you tackle the problem, including the assumptions you make and the steps you take to arrive at the solution.
-Correctness of the Final Solution: The answer should be accurate and derived correctly based on your chosen approach and assumptions.
-Preferred Approach: Given the role you are interviewing for, the Analytics Engineering Approach is highly preferred. It provides a much stronger opportunity to demonstrate the skills and mindset critical to the role at Salla.
