@@ -87,12 +87,12 @@ salla-analytics-assignment/
 ├── salla_dbt/                        # dbt repository
 │   ├── models/
 │   │   ├── sources.yml               # Raw data sources
-│   │   ├── staging/                  # Silver layer
+│   │   ├── staging/                  # Bronze layer
 │   │   │   ├── stg_customers.sql
 │   │   │   ├── stg_orders.sql
 │   │   │   ├── stg_order_items.sql
 │   │   │   └── stg_products.sql
-│   │   ├── intermediate/             # Joins and transformations
+│   │   ├── intermediate/             # Silver layer
 │   │   │   ├── int_customer_orders.sql
 │   │   │   └── int_order_items.sql
 │   │   └── curated/                  # Gold layer
