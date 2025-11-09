@@ -60,7 +60,7 @@ streamlit run dashboard.py
 - Cube Core semantic layer (metrics engine with SQL API)
 - Metabase BI tool (drag-and-drop analytics interface)
 
-**Use Case:** **Recommended evaluation path.** Demonstrates full semantic layer capabilities with proper metric definitions, pre-aggregations, and BI tooling.
+**Use Case:** (Recommended) Demonstrates full semantic layer capabilities with proper metric definitions, pre-aggregations, and BI tooling.
 
 **To Run:**
 ```bash
