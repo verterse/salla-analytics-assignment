@@ -35,21 +35,26 @@ WITH customer_orders AS (
 
 , joined AS (
     SELECT
-        -- Identifiers
+        -- identifiers
         OI.order_item_id
         , OI.order_id
         , OI.product_id
         , OI.seller_id
+
+        -- customer natural key (not required)
         , CO.customer_id
 
-        -- Order attributes
+        -- customer surrogate key
+        , CO.customer_address_id
+
+        -- order attributes
         , CO.order_status
         , CO.order_purchase_timestamp
         , CO.order_delivered_carrier_date
         , CO.order_delivered_customer_date
         , CO.order_estimated_delivery_date
 
-        -- Item metrics
+        -- item level metrics
         , OI.quantity
         , OI.unit_item_price
         , OI.total_item_price
@@ -61,7 +66,7 @@ WITH customer_orders AS (
             CO.order_id = OI.order_id
         )
     WHERE
-        -- Exclude cancelled orders
+        -- exclude cancelled orders
         LOWER(CO.order_status) != 'canceled'
 )
 SELECT * FROM joined

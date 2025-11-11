@@ -12,9 +12,12 @@ cubes:
 
       - name: customers
         relationship: many_to_one
-        sql: "{CUBE}.customer_id = {customers.customer_id} AND
-          {CUBE}.order_purchase_timestamp >= {customers.effective_from} AND
-          {CUBE}.order_purchase_timestamp < {customers.effective_to}"
+        # join on surrogate key
+        sql: "{CUBE}.customer_address_id = {customers.customer_address_id}"
+        # join on natural key and date range
+        # sql: "{CUBE}.customer_id = {customers.customer_id} AND
+        #   {CUBE}.order_purchase_timestamp >= {customers.effective_from} AND
+        #   {CUBE}.order_purchase_timestamp < {customers.effective_to}"
 
       - name: sellers
         relationship: many_to_one

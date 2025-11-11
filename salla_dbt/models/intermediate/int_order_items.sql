@@ -15,6 +15,10 @@
     Grain: One row per order + product combination
 */
 
+WITH order_items AS (
+    SELECT * FROM {{ ref('stg_order_items') }}
+)
+
 SELECT
     order_id
     , product_id
@@ -26,6 +30,6 @@ SELECT
     , SUM(item_price) AS total_item_price
     , SUM(shipping_price) AS total_shipping_price
 FROM
-    {{ ref('stg_order_items') }} AS OI
+    order_items
 GROUP BY
     1, 2, 3
