@@ -32,9 +32,16 @@ models:
               to: ref('dim_sellers')
               field: seller_id
       - name: customer_id
-        description: Foreign key to dim_customers (natural key)
+        description: Natural key for customer (supplementary
         tests:
           - not_null
+      - name: customer_address_id
+        description: Foreign key to dim_customers (surrogate key for SCD Type 2 joins)
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_address_id
       - name: order_status
         description: Order status (cancelled orders excluded)
         tests:

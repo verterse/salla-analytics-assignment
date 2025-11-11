@@ -25,6 +25,18 @@ models:
         description: State where customer is located
         tests:
           - not_null
+      - name: customer_full_address
+        description: Concatenated customer address (city|state) for change detection
+        tests:
+          - not_null
+      - name: is_change_point
+        description: Boolean flag indicating whether this order marks an address change
+        tests:
+          - not_null
+      - name: customer_address_id
+        description: Surrogate key for customer address periods (SCD Type 2)
+        tests:
+          - not_null
       - name: order_status
         description: Current order status
         tests:
